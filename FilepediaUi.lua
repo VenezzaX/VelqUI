@@ -1,9 +1,14 @@
+-- Nexus UI Library v1.0
+-- Open Source, Clean, Modern UI Library for Roblox Scripts
+-- Easily host this on GitHub and loadstring it!
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 local Nexus = {}
 
+-- Utility to create instances with properties
 local function Create(className, properties)
     local inst = Instance.new(className)
     for k, v in pairs(properties) do
@@ -12,6 +17,7 @@ local function Create(className, properties)
     return inst
 end
 
+-- Draggable function for the top bar
 local function MakeDraggable(topbar, frame)
     local dragging = false
     local dragInput, mousePos, framePos
@@ -76,6 +82,7 @@ function Nexus:CreateWindow(options)
     })
     Create("UICorner", {Parent = TopBar, CornerRadius = UDim.new(0, 8)})
 
+    -- Bottom corner fix for TopBar
     Create("Frame", {
         Parent = TopBar,
         Size = UDim2.new(1, 0, 0, 8),
@@ -95,6 +102,69 @@ function Nexus:CreateWindow(options)
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left
     })
+
+
+    -- Close button
+    local CloseBtn = Create("TextButton", {
+        Parent = TopBar,
+        Size = UDim2.new(0, 28, 0, 24),
+        Position = UDim2.new(1, -32, 0.5, -12),
+        BackgroundColor3 = Color3.fromRGB(200, 60, 60),
+        Text = "×",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        AutoButtonColor = false,
+        ZIndex = 10
+    })
+    Create("UICorner", {Parent = CloseBtn, CornerRadius = UDim.new(0, 4)})
+    CloseBtn.MouseEnter:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(230, 80, 80)}):Play()
+    end)
+    CloseBtn.MouseLeave:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(200, 60, 60)}):Play()
+    end)
+    CloseBtn.MouseButton1Click:Connect(function()
+        TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+        task.delay(0.3, function() ScreenGui:Destroy() end)
+    end)
+
+    -- Minimize button
+    local MinBtn = Create("TextButton", {
+        Parent = TopBar,
+        Size = UDim2.new(0, 28, 0, 24),
+        Position = UDim2.new(1, -64, 0.5, -12),
+        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+        Text = "−",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        Font = Enum.Font.GothamBold,
+        TextSize = 18,
+        AutoButtonColor = false,
+        ZIndex = 10
+    })
+    Create("UICorner", {Parent = MinBtn, CornerRadius = UDim.new(0, 4)})
+
+    local minimized = false
+    MinBtn.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 600, 0, 40)}):Play()
+            MinBtn.Text = "+"
+        else
+            TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 600, 0, 400)}):Play()
+            MinBtn.Text = "−"
+        end
+    end)
+
+    -- RightShift to toggle the whole UI
+    local guiVisible = true
+    game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+        if input.KeyCode == Enum.KeyCode.RightShift then
+            guiVisible = not guiVisible
+            MainFrame.Visible = guiVisible
+        end
+    end)
+
 
     MakeDraggable(TopBar, MainFrame)
 
@@ -227,7 +297,13 @@ function Nexus:CreateWindow(options)
 
             Btn.MouseEnter:Connect(function() TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play() end)
             Btn.MouseLeave:Connect(function() TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(32, 32, 32)}):Play() end)
-            Btn.MouseButton1Click:Connect(function() pcall(callback) end)
+            Btn.MouseButton1Click:Connect(function()
+                TweenService:Create(ButtonFrame, TweenInfo.new(0.07), {BackgroundColor3 = Color3.fromRGB(55, 100, 255)}):Play()
+                task.delay(0.12, function()
+                    TweenService:Create(ButtonFrame, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(32, 32, 32)}):Play()
+                end)
+                task.spawn(pcall, callback)
+            end)
         end
 
         function Tab:CreateToggle(options)
