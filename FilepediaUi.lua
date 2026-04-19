@@ -1,4 +1,4 @@
--- FilepediaUi v1.0
+-- Filepedia v1.0
 -- Open Source, Clean, Modern UI Library for Roblox Scripts
 
 local TweenService = game:GetService("TweenService")
@@ -2798,7 +2798,6 @@ coroutine.wrap(function()
                 if commentContent then
                     commentContent.Text = timerText
                 end
-            end
             end
             lastTimerText = timerText
         end
