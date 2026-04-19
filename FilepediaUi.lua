@@ -1,6 +1,3 @@
--- Filepedia v1.0
--- Open Source, Clean, Modern UI Library for Roblox Scripts
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -2935,6 +2932,3 @@ MiscTabRaw:CreateButton({
         print("[Map Remotes]", result)
     end
 })
--- ============================================================
-
--- extra item automation
